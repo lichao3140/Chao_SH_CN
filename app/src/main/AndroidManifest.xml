@@ -77,6 +77,15 @@
 
         <service android:name="com.runvision.service.MyLogcatService" />
 
+        <service android:name="com.runvision.service.ConnectService" />
+
+        <receiver android:name="com.runvision.broadcast.ServiceBroadcastReceiver">
+            <intent-filter>
+                <action android:name="NotifyServiceStart" />
+                <action android:name="NotifyServiceStop" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name="com.runvision.broadcast.BootBroadcastReceiver"
             android:enabled="true"

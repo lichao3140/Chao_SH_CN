@@ -92,6 +92,7 @@ import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     private MyRedThread mMyRedThread;//红外线程
     private UIThread uithread;
     private UDPServerThread mUDPServerThread;
-    private ReConSocketHeartBeatThread reConSocketHeartBeatThread;
+    private ReConSocketHeartBeatThread reConSocketHeartBeatThread;//断开自动重连VMS
 
     //////////////////////////////////////////////////视图控件
     public MyCameraSuf mCameraSurfView;
@@ -532,7 +533,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     break;
                 case Const.SOCKET_DIDCONNECT:/*socket断开连接*/
                     socket_status.setBackgroundResource(R.drawable.socket_false);
-                    // 不去关闭，继续要他重新去连接
                     closeSocket();
                     Const.SOCKET_STATUS = true;
                     break;
@@ -604,22 +604,56 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         startService(intentService);
 
         openNetStatusReceiver();
-        //关闭VMS功能
-//        openSocket();
-
         //监听U盘热插拔模块启动
         udiskPluggedin();
 
-        if (mUDPServerThread == null) {
-            mUDPServerThread = new UDPServerThread();
-            mUDPServerThread.start();
-        }
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                handleData();
+            }
+        }.start();
+
+        //关闭VMS功能
+//        openSocket();
+
+        //接收访客机广播模板
+//        if (mUDPServerThread == null) {
+//            mUDPServerThread = new UDPServerThread();
+//            mUDPServerThread.start();
+//        }
 
         //关闭VMS功能
 //        if (reConSocketHeartBeatThread == null) {
 //            reConSocketHeartBeatThread = new ReConSocketHeartBeatThread();
 //            reConSocketHeartBeatThread.start();
 //        }
+    }
+
+    private void handleData() {
+        Socket socket = null;
+        try {
+            // adb 指令
+            Runtime.getRuntime().exec("adb forward tcp:12580 tcp:10086"); // 端口转换
+            Thread.sleep(3000);
+            Runtime.getRuntime().exec("adb shell am broadcast -a NotifyServiceStart");
+
+            InetAddress serverAdd = InetAddress.getByName("127.0.0.1");
+            socket = new Socket(serverAdd, 10086);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (Exception e) {
+                Log.e(TAG,"handleData ERROR:" + e.toString());
+            }
+        }
+
     }
 
     @Override
