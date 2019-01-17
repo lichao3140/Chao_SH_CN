@@ -15,7 +15,8 @@ public class AppData {
     private String Name;// 姓名
     private String sex;// 性别
     private String Nation;// 名族代码
-
+    private String apartment;//签发机关
+    private String period;//有效日期
     private String Birthday;// 生日
     private String Address;// 地址
     private float CompareScore;// 人证比对的比分
@@ -275,7 +276,21 @@ public class AppData {
         this.updatedeviceip = updatedeviceip;
     }
 
+    public String getApartment() {
+        return apartment;
+    }
 
+    public void setApartment(String apartment) {
+        this.apartment = apartment;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
 }
 
 

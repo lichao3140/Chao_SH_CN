@@ -866,7 +866,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     }
 
     /**
-     * 串口读卡器
+     * 内置读卡器
      *
      * @param identityInfo
      */
@@ -882,6 +882,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     AppData.getAppData().setAddress(identityInfo.getAddress());
                     AppData.getAppData().setCardNo(identityInfo.getNo());
                     AppData.getAppData().setCardBmp(cardBitmap);
+                    AppData.getAppData().setApartment(identityInfo.getApartment());
+                    AppData.getAppData().setPeriod(identityInfo.getPeriod());
                     Message msg = new Message();
                     msg.obj = 5;
                     msg.what = Const.COMPER_FINIASH;
@@ -1208,10 +1210,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 //保存到数据库
                 SendInfoHelper.addSendInfo(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
                         AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
-                        "公安局", "2018.2.18-2028.2.18",
+                        AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
                         Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
                         Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
                         AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
+
+                //封装成Json格式
+
+
             }
             oneVsMoreView.setVisibility(View.GONE);
             alert.setVisibility(View.VISIBLE);
@@ -1246,7 +1252,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             //保存到数据库
             SendInfoHelper.addSendInfo(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
                     AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
-                    "公安局", "2018.2.18-2028.2.18",
+                    AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
+                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
+                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
+                    AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
+            //封装成Json格式
+            SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+                    AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
+                    AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
@@ -1958,16 +1971,9 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
     }
 
     /******************G701/G702身份证读卡******************/
-    private UsbManager mUsbManager;
-    private UsbDevice idcard_reader;
-    private boolean hasReader = false;
-    private PendingIntent mPermissionIntent;
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
-
     private IdentityInfo info;
     private Bitmap cardBitmap;
     private byte[] image;
-    private boolean hasPermission = false;
 
     private class GetIDInfoTask extends AsyncTask<Void, Integer, Boolean> {
         public boolean taskIsRuning = true;
