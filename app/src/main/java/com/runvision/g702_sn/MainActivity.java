@@ -1254,7 +1254,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                         AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
                 //封装成Json格式
+                String sendInfo_Fail = SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+                        AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
+                        AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
+                        CameraHelp.bitmapToBase64(AppData.getAppData().getCardBmp()), CameraHelp.bitmapToBase64(AppData.getAppData().getOneFaceBmp()),
+                        AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
+                //发送给客户端
+                ThreadReadWriterIOSocket.SendMsg(sendInfo_Fail);
 
             }
             oneVsMoreView.setVisibility(View.GONE);
@@ -1295,14 +1302,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
             //封装成Json格式
-            String sendInfoMsg = SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+            String sendInfo_Success = SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
                     AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
                     AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
-                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
-                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
+                    CameraHelp.bitmapToBase64(AppData.getAppData().getCardBmp()), CameraHelp.bitmapToBase64(AppData.getAppData().getOneFaceBmp()),
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
-            ThreadReadWriterIOSocket.SendMsg(sendInfoMsg);
+            //发送给客户端
+            ThreadReadWriterIOSocket.SendMsg(sendInfo_Success);
 
             mHandler.postDelayed(() -> {
                 GPIOHelper.openDoor(false);
