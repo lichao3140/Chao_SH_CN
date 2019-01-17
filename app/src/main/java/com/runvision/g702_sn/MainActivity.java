@@ -42,11 +42,13 @@ import com.runvision.bean.DaoSession;
 import com.runvision.bean.FaceInfoss;
 import com.runvision.bean.ImageStack;
 import com.runvision.bean.RecognitionRecordDao;
+import com.runvision.bean.SendInfoDao;
 import com.runvision.bean.SocketRecordDao;
 import com.runvision.broadcast.NetWorkStateReceiver;
 import com.runvision.broadcast.UdiskReceiver;
 import com.runvision.core.Const;
 import com.runvision.db.Record;
+import com.runvision.db.SendInfoHelper;
 import com.runvision.db.SocketDataHelper;
 import com.runvision.db.User;
 import com.runvision.frament.DeviceSetFrament;
@@ -173,8 +175,9 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
 
     private Boolean SysTimeflag = true;
 
-    public static SocketRecordDao socketRecordDao;
-    public static RecognitionRecordDao recognitionRecordDao;
+    public static SocketRecordDao socketRecordDao;//VMS断点续传
+    public static RecognitionRecordDao recognitionRecordDao;//识别记录
+    public static SendInfoDao sendInfoDao;//发送给PC端信息
     private List<User> mList;
 
     /**
@@ -589,6 +592,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         DaoSession daoSession = application.getDaoSession();
         socketRecordDao = daoSession.getSocketRecordDao();
         recognitionRecordDao = daoSession.getRecognitionRecordDao();
+        sendInfoDao = daoSession.getSendInfoDao();
         initView();
         mContext = this;
 
@@ -1201,6 +1205,13 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 user.setRecord(record);
                 MyApplication.faceProvider.addRecord(user);
 
+                //保存到数据库
+                SendInfoHelper.addSendInfo(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+                        AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
+                        "公安局", "2018.2.18-2028.2.18",
+                        Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
+                        Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
+                        AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
             }
             oneVsMoreView.setVisibility(View.GONE);
             alert.setVisibility(View.VISIBLE);
@@ -1231,6 +1242,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             user = new User(AppData.getAppData().getName(), "无", AppData.getAppData().getSex(), 0, "无", AppData.getAppData().getCardNo(), Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID, DateTimeUtils.getTime());
             user.setRecord(record);
             MyApplication.faceProvider.addRecord(user);
+
+            //保存到数据库
+            SendInfoHelper.addSendInfo(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+                    AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
+                    "公安局", "2018.2.18-2028.2.18",
+                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
+                    Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
+                    AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
             mHandler.postDelayed(() -> {
                 GPIOHelper.openDoor(false);
