@@ -59,6 +59,7 @@ import com.runvision.thread.BatchImport;
 import com.runvision.thread.FaceFramTask;
 import com.runvision.thread.HeartBeatThread;
 import com.runvision.thread.SocketThread;
+import com.runvision.thread.ThreadReadWriterIOSocket;
 import com.runvision.utils.CameraHelp;
 import com.runvision.utils.ConversionHelp;
 import com.runvision.utils.DateTimeUtils;
@@ -631,6 +632,9 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
 //        }
     }
 
+    /**
+     * OTG终端开启服务器
+     */
     private void handleData() {
         Socket socket = null;
         try {
@@ -641,7 +645,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
 
             InetAddress serverAdd = InetAddress.getByName("127.0.0.1");
             socket = new Socket(serverAdd, 10086);
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -653,7 +656,6 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                 Log.e(TAG,"handleData ERROR:" + e.toString());
             }
         }
-
     }
 
     @Override
@@ -1293,12 +1295,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
             //封装成Json格式
-            SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
+            String sendInfoMsg = SendInfoHelper.pottingJSON(AppData.getAppData().getName(), AppData.getAppData().getSex(), AppData.getAppData().getNation(),
                     AppData.getAppData().getBirthday(), AppData.getAppData().getAddress(), AppData.getAppData().getCardNo(),
                     AppData.getAppData().getApartment(), AppData.getAppData().getPeriod(),
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Card" + "/" + cardImageID,
                     Environment.getExternalStorageDirectory() + "/FaceAndroid/" + TestDate.DGetSysTime() + "_Face" + "/" + snapImageID,
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
+
+            ThreadReadWriterIOSocket.SendMsg(sendInfoMsg);
 
             mHandler.postDelayed(() -> {
                 GPIOHelper.openDoor(false);

@@ -4,10 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import com.runvision.service.ConnectService;
 import com.runvision.utils.MyUtil;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
