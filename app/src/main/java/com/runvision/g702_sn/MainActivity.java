@@ -604,7 +604,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         startService(intentService);
 
         openNetStatusReceiver();
-        openSocket();
+        //关闭VMS功能
+//        openSocket();
 
         //监听U盘热插拔模块启动
         udiskPluggedin();
@@ -614,10 +615,11 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             mUDPServerThread.start();
         }
 
-        if (reConSocketHeartBeatThread == null) {
-            reConSocketHeartBeatThread = new ReConSocketHeartBeatThread();
-            reConSocketHeartBeatThread.start();
-        }
+        //关闭VMS功能
+//        if (reConSocketHeartBeatThread == null) {
+//            reConSocketHeartBeatThread = new ReConSocketHeartBeatThread();
+//            reConSocketHeartBeatThread.start();
+//        }
     }
 
     @Override
@@ -1564,7 +1566,8 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
             if (CameraHelp.getIpAddress().equals("")) {
                 DeviceSetFrament.updateSetting("192.168.1.2", mContext);
             }
-            openSocket();
+            //关闭VMS功能
+//            openSocket();
             openHttpServer();
         } else {
             System.out.println("dis conn");
