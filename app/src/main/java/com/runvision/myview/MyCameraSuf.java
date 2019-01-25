@@ -106,7 +106,7 @@ public class MyCameraSuf extends SurfaceView implements SurfaceHolder.Callback, 
                     parameters.setPreviewFormat(ImageFormat.NV21);
                     mCamera.setParameters(parameters);
                     //G701---90   G702---270
-                    mCamera.setDisplayOrientation(270);
+                    mCamera.setDisplayOrientation(90);
                     mCamera.setPreviewDisplay(mSurfaceHolder);
                     mCamera.startPreview();
                     cameraStaus = true;

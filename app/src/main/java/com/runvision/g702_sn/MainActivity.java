@@ -94,6 +94,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -203,6 +204,12 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     if (Const.IsLive == 5) {
                         Const.LiveNum = 0;
                         Const.IsLive = 0;
+                    }
+
+                    if (Const.USB_SOCKET_STATUS) {
+                        socket_status.setBackgroundResource(R.drawable.socket_true);
+                    } else {
+                        socket_status.setBackgroundResource(R.drawable.socket_false);
                     }
 
                     //删除模板
@@ -386,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     }
 
                     if (SPUtil.getBoolean(Const.KEY_ISOPEN_ONE, Const.OPEN_ONE_VS_ONE)) {
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(Const.MSG_READ_CARD, ""), 100);
+                        mHandler.sendMessageDelayed(mHandler.obtainMessage(Const.MSG_READ_CARD, ""), 1000);
                     }
                     break;
 
@@ -939,7 +946,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         List<FaceInfo> result = new ArrayList<FaceInfo>();
         List<LivenessInfo> livenessInfoList = new ArrayList<>();
         //G702---90   G701---270
-        byte[] des = CameraHelp.rotateCamera(imageStack.pullImageInfo().getData(), 640, 480, 90);
+        byte[] des = CameraHelp.rotateCamera(imageStack.pullImageInfo().getData(), 640, 480, 270);
 
         MyApplication.mFaceLibCore.FaceDetection(des, 480, 640, result);
         if (result.size() == 0) {
@@ -1113,6 +1120,9 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
         if(audionum == 4) {
             playMusic(R.raw.nolive);
         }
+        if (audionum == 5) {
+            playMusic(R.raw.client_connect_fail);
+        }
         loadprompt.setText(showmessage);
         promptshow_xml.setVisibility(View.VISIBLE);
         if (audionum != 2) {
@@ -1260,19 +1270,21 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                         CameraHelp.bitmapToBase64(AppData.getAppData().getCardBmp()), CameraHelp.bitmapToBase64(AppData.getAppData().getOneFaceBmp()),
                         AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
-                //发送给客户端
-                ThreadReadWriterIOSocket.SendMsg(sendInfo_Fail);
-
+                if (Const.USB_SOCKET_STATUS) {
+                    //发送给客户端
+                    ThreadReadWriterIOSocket.SendMsg(sendInfo_Fail);
+                    oneVsMoreView.setVisibility(View.GONE);
+                    alert.setVisibility(View.VISIBLE);
+                    playMusic(R.raw.error);
+                } else {
+                    ShowPromptMessage("客户端连接失败", 5);
+                }
             }
-            oneVsMoreView.setVisibility(View.GONE);
-            alert.setVisibility(View.VISIBLE);
-            playMusic(R.raw.error);
         } else if (AppData.getAppData().getOneFaceBmp() != null && AppData.getAppData().getoneCompareScore() >= SPUtil.getFloat(Const.KEY_CARDSCORE, Const.ONEVSONE_SCORE)) {
             str = "成功";
             playMusic(R.raw.success);
             isSuccessComper.setImageResource(R.mipmap.icon_tg);
             faceBmp_view.setImageBitmap(AppData.getAppData().getOneFaceBmp());
-            GPIOHelper.openDoor(true);
             PosUtil.setRelayPower(1);//开闸
 
             mHandler.postDelayed(() -> {
@@ -1308,16 +1320,14 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     CameraHelp.bitmapToBase64(AppData.getAppData().getCardBmp()), CameraHelp.bitmapToBase64(AppData.getAppData().getOneFaceBmp()),
                     AppData.getAppData().getoneCompareScore(), DateTimeUtils.getTime(), str);
 
-            //发送给客户端
-            ThreadReadWriterIOSocket.SendMsg(sendInfo_Success);
-
-            mHandler.postDelayed(() -> {
-                GPIOHelper.openDoor(false);
-                PosUtil.setRelayPower(0);//关闸
-            }, 1000);
-            oneVsMoreView.setVisibility(View.GONE);
-            alert.setVisibility(View.VISIBLE);
-
+            if (Const.USB_SOCKET_STATUS) {
+                //发送给客户端
+                ThreadReadWriterIOSocket.SendMsg(sendInfo_Success);
+                oneVsMoreView.setVisibility(View.GONE);
+                alert.setVisibility(View.VISIBLE);
+            } else {
+                ShowPromptMessage("客户端连接失败", 5);
+            }
         } else {
             oneVsMoreView.setVisibility(View.GONE);
             alert.setVisibility(View.GONE);
@@ -2077,7 +2087,7 @@ public class MainActivity extends AppCompatActivity implements NetWorkStateRecei
                     if (1 == WLTService.wlt2Bmp(image, buf)) {
                         cardBitmap = IDPhotoHelper.Bgr2Bitmap(buf);
                     }
-                    if (ReaderCardFlag && !info.getName().equals("")) {
+                    if (ReaderCardFlag && info != null) {
                         isOpenOneVsMore = false;
                         ReaderCardFlag = false;
                         Message msg = new Message();

@@ -2,6 +2,8 @@ package com.runvision.thread;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.runvision.core.Const;
 import com.runvision.service.ConnectService;
 import com.runvision.utils.MyUtil;
 import java.io.BufferedInputStream;
@@ -29,7 +31,8 @@ public class ThreadReadWriterIOSocket implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, Thread.currentThread().getName() + "---->" + "a client has connected to server!");
+        Log.d(TAG, Thread.currentThread().getName() + "---->" + "客户端连接成功!");
+        Const.USB_SOCKET_STATUS = true;
         try {
             out = new BufferedOutputStream(client.getOutputStream());
             in = new BufferedInputStream(client.getInputStream());

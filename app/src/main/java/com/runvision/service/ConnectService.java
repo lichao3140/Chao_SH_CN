@@ -48,7 +48,7 @@ public class ConnectService extends Service {
 
             boolean mainThreadFlag = true;
             while (mainThreadFlag) {
-                Log.d(TAG, Thread.currentThread().getName() + "---->" + " doListen() listen");
+                Log.d(TAG, Thread.currentThread().getName() + "---->" + "连接监听中...");
 
                 Socket client = serverSocket.accept();
 

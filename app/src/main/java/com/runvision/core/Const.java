@@ -57,8 +57,8 @@ public class Const {
     public static final String APP_ID = "J3Yscp63XC1M1ut6Fk6DguUWbe9ZrnF8VyHe4KKRvw43";
     public static final String SDK_KEY = "3bw37uNsBhbYveepprt6L4WoGrKnBgu7WQQMqnhFiJB4";
 
-    //记录人脸定位算法是否成功
-    public static boolean afdInit = false;
+    // USB与PC连接状态
+    public static boolean USB_SOCKET_STATUS = false;
 
     public static final int PROMPT = 1000;
     public static final int COMPER_END = 1001;

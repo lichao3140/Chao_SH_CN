@@ -55,7 +55,7 @@ public class FaceFramTask extends AsyncTask<Void, Rect, Void> {
     protected Void doInBackground(Void... params) {
         while (isRuning) {
             //G702---90   G701---270
-            des = CameraHelp.rotateCamera(imageStack.pullImageInfo().getData(), 640, 480, 90);
+            des = CameraHelp.rotateCamera(imageStack.pullImageInfo().getData(), 640, 480, 270);
             MyApplication.mFaceLibCore.FaceDetection(des, 480, 640, result);
             if (result.size() != 0) {
                 int face_left = result.get(0).getRect().left;
